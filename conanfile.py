@@ -19,7 +19,7 @@ class GLogConan(ConanFile):
 
     def config(self):
         if self.options.gflags == True:
-            self.requires.add("gflags/2.1.2@eliaskousk/stable", private=False)
+            self.requires.add("gflags/2.2.0@eliaskousk/stable", private=False)
 
     def source(self):
         url = "https://github.com/google/glog/archive/%s" % self.zip_name
