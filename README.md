@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/eliaskousk/conan-glog.svg)](https://travis-ci.org/eliaskousk/conan-glog)
+[![Build Status](https://travis-ci.org/eliaskousk/conan-glog.svg?branch=release/0.3.4)](https://travis-ci.org/eliaskousk/conan-glog)
 
 # conan-glog
 
