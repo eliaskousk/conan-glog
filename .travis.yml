@@ -8,7 +8,7 @@ env:
     - CONAN_UPLOAD=1
     - CONAN_REFERENCE="glog/0.3.4"
     - CONAN_USERNAME="eliaskousk"
-    - CONAN_CHANNEL="ci"
+    - CONAN_CHANNEL="stable"
     - CONAN_TOTAL_PAGES=1
     - CONAN_CURRENT_PAGE=1
 
