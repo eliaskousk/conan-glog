@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/eliaskousk/conan-glog.svg)](https://travis-ci.org/eliaskousk/conan-glog)
+
 # conan-glog
 
 [Conan.io](https://conan.io) package for Google's GLog logging library
