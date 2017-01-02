@@ -35,7 +35,10 @@ class GLogConan(ConanFile):
     def build(self):
         gflags_path = self.deps_cpp_info["gflags"].rootpath
         gflags = "--with-gflags=%s" % gflags_path if self.options.gflags else ""
-        self.run("cd %s && autoreconf --force --install && ./configure --prefix=`pwd`/../_build %s && make && make install" % (self.unzipped_name, gflags))
+        shared ="--enable-static=no" if self.options.shared else ""
+        static ="--enable-shared=no" if not self.options.shared else ""
+
+        self.run("cd %s && autoreconf --force --install && ./configure --prefix=`pwd`/../_build %s %s %s && make && make install" % (self.unzipped_name, gflags, shared, static))
 
         # When using CMake to build
         #
