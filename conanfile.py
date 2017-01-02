@@ -2,7 +2,7 @@ from conans import ConanFile
 import os
 from conans.tools import download
 from conans.tools import unzip
-from conans import CMake
+from conans import CMake, ConfigureEnvironment
 
 class GLogConan(ConanFile):
     name = "glog"
@@ -33,26 +33,17 @@ class GLogConan(ConanFile):
         # self.run("cd glog-%s && git checkout v0.3.4" % self.version)
 
     def build(self):
+        env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
         gflags_path = self.deps_cpp_info["gflags"].rootpath
         gflags = "--with-gflags=%s" % gflags_path if self.options.gflags else ""
         shared ="--enable-static=no" if self.options.shared else ""
         static ="--enable-shared=no" if not self.options.shared else ""
 
-        self.run("cd %s && autoreconf --force --install && ./configure --prefix=`pwd`/../_build %s %s %s && make && make install" % (self.unzipped_name, gflags, shared, static))
-
-        # When using CMake to build
-        #
-        # cmake = CMake(self.settings)
-        # if self.settings.os == "Windows":
-            # self.run("IF not exist _build mkdir _build")
-        # else:
-            # self.run("mkdir _build")
-        # cd_build = "cd _build"
-        # gflags = "-DWITH_GFLAGS=1" if self.options.gflags else ""
-        # multithreaded = "-DWITH_THREADS=1" if self.options.multithreaded else ""
-        # shared = "-DBUILD_SHARED_LIBS=1" if self.options.shared else ""
-        # self.run('%s && cmake .. %s %s %s %s' % (cd_build, cmake.command_line, shared, gflags, multithreaded))
-        # self.run("%s && cmake --build . %s" % (cd_build, cmake.build_config))
+        self.run("cd %s && autoreconf --force --install && %s ./configure --prefix=`pwd`/../_build %s %s %s && make && make install" % (self.unzipped_name,
+                                                                                                                                        env.command_line,
+                                                                                                                                        gflags,
+                                                                                                                                        shared,
+                                                                                                                                        static))
 
     def package(self):
 
@@ -65,10 +56,6 @@ class GLogConan(ConanFile):
         # Copying headers
         self.copy(pattern="*.h", dst="include", src="_build/include", keep_path=True)
 
-        # When using CMake to build
-        #
-        # self.copy(pattern="*.h", dst="include/glog", src="_build/glog-%s/glog" % self.version, keep_path=True)
-
         libdir = "_build/lib"
         # Copying static and dynamic libs
         self.copy(pattern="*.a", dst="lib", src=libdir, keep_path=False)
@@ -79,3 +66,7 @@ class GLogConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ['glog']
+
+        if self.settings.os == "Linux":
+            self.cpp_info.libs.append("pthread")
+
