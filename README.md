@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/eliaskousk/conan-glog.svg?branch=release/0.3.4)](https://travis-ci.org/eliaskousk/conan-glog)
+[![Build Status](https://travis-ci.org/eliaskousk/conan-glog.svg?branch=master)](https://travis-ci.org/eliaskousk/conan-glog)
 
 # conan-glog
 
@@ -12,20 +12,20 @@ Download conan client from [Conan.io](https://conan.io) and run:
     
 ## Upload packages to server
 
-    $ conan upload glog/0.3.4@eliaskousk/stable --all
+    $ conan upload glog/latest@eliaskousk/stable --all
     
 ## Reuse the packages
 
 ### Basic setup
 
-    $ conan install glog/0.3.4@eliaskousk/stable/
+    $ conan install glog/latest@eliaskousk/stable
     
 ### Project setup
 
 If you handle multiple dependencies in your project is better to add a *conanfile.txt*
     
     [requires]
-    glog/0.3.4@eliaskousk/stable
+    glog/latest@eliaskousk/stable
 
     [options]
     glog:shared=true # false

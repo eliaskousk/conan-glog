@@ -5,7 +5,7 @@ environment:
     PYTHON_ARCH: "32"
     
     CONAN_UPLOAD: 1
-    CONAN_REFERENCE: "glog/0.3.4"
+    CONAN_REFERENCE: "glog/latest"
     CONAN_USERNAME: "eliaskousk"
     CONAN_CHANNEL: "stable"
     CONAN_TOTAL_PAGES: 4
