@@ -44,7 +44,12 @@ matrix:
          language: generic
          env:
 
+before_install:
+  #- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew uninstall libtool && brew install libtool; fi
+
 install:
   - ./.travis/install.sh
 script:
   - ./.travis/run.sh
+

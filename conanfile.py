@@ -41,9 +41,10 @@ class GLogConan(ConanFile):
         if self.options.fpic:
             env_line = env.command_line.replace('CFLAGS="', 'CFLAGS="-fPIC ')
             env_line = env.command_line.replace('CXXFLAGS="', 'CXXFLAGS="-fPIC ')
-        self.run("cd %s && autoreconf --force --install && %s ./configure %s %s %s --prefix=`pwd`/../_build" % (self.unzipped_name,
-                                                                                                                env.command_line_env,
-                                                                                                                gflags, shared, static))
+        self.run("cd %s && %s autoreconf -fvi" % (self.unzipped_name, env.command_line_env))
+        self.run("cd %s && %s ./configure %s %s %s --prefix=`pwd`/../_build" % (self.unzipped_name,
+                                                                                env.command_line_env,
+                                                                                gflags, shared, static))
         self.run("cd %s && %s make && make install" % (self.unzipped_name, env.command_line_env))
 
     def package(self):
