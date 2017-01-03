@@ -9,8 +9,8 @@ class GLogConan(ConanFile):
     version = "0.3.4"
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False], "gflags": [True, False], "multithreaded": [True, False]}
-    default_options = "shared=True", "gflags=True", "multithreaded=True"
+    options = {"shared": [True, False], "gflags": [True, False], "multithreaded": [True, False], "fpic": [True, False]}
+    default_options = "shared=True", "gflags=True", "multithreaded=True", "fpic=True"
     url="http://github.com/eliaskousk/conan-glog"
     license="https://www.apache.org/licenses/LICENSE-2.0"
     exports= "CMakeLists.txt", "FindGlog.cmake", "change_dylib_names.sh"
@@ -33,20 +33,20 @@ class GLogConan(ConanFile):
         # self.run("cd glog-%s && git checkout v0.3.4" % self.version)
 
     def build(self):
-        env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
         gflags_path = self.deps_cpp_info["gflags"].rootpath
         gflags = "--with-gflags=%s" % gflags_path if self.options.gflags else ""
         shared ="--enable-static=no" if self.options.shared else ""
         static ="--enable-shared=no" if not self.options.shared else ""
-
-        self.run("cd %s && autoreconf --force --install && %s ./configure --prefix=`pwd`/../_build %s %s %s && make && make install" % (self.unzipped_name,
-                                                                                                                                        env.command_line,
-                                                                                                                                        gflags,
-                                                                                                                                        shared,
-                                                                                                                                        static))
+        env = ConfigureEnvironment(self)
+        if self.options.fpic:
+            env_line = env.command_line.replace('CFLAGS="', 'CFLAGS="-fPIC ')
+            env_line = env.command_line.replace('CXXFLAGS="', 'CXXFLAGS="-fPIC ')
+        self.run("cd %s && autoreconf --force --install && %s ./configure %s %s %s --prefix=`pwd`/../_build" % (self.unzipped_name,
+                                                                                                                env.command_line_env,
+                                                                                                                gflags, shared, static))
+        self.run("cd %s && %s make && make install" % (self.unzipped_name, env.command_line_env))
 
     def package(self):
-
         if self.settings.os == "Macos" and self.options.shared:
             self.run("bash ./change_dylib_names.sh")
 
@@ -57,12 +57,16 @@ class GLogConan(ConanFile):
         self.copy(pattern="*.h", dst="include", src="_build/include", keep_path=True)
 
         libdir = "_build/lib"
-        # Copying static and dynamic libs
-        self.copy(pattern="*.a", dst="lib", src=libdir, keep_path=False)
+        if self.options.shared:
+            # Copying dynamic libs
+            self.copy(pattern="*.so*", dst="lib", src=libdir, keep_path=False)
+            self.copy(pattern="*.dylib*", dst="lib", src=libdir, keep_path=False)
+            self.copy(pattern="*.dll", dst="bin", src=libdir, keep_path=False)
+        else:
+            # Copying static libs
+            self.copy(pattern="*.a", dst="lib", src=libdir, keep_path=False)
+
         self.copy(pattern="*.lib", dst="lib", src=libdir, keep_path=False)
-        self.copy(pattern="*.so*", dst="lib", src=libdir, keep_path=False)
-        self.copy(pattern="*.dylib*", dst="lib", src=libdir, keep_path=False)
-        self.copy(pattern="*.dll", dst="bin", src=libdir, keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = ['glog']
